@@ -9,7 +9,7 @@
  * https://en.wikipedia.org/wiki/SHA-1 and the ability to use test
  * vectors from NIST's National Software Reference Library (NSRL).
  *
- * Comand line options:
+ * Command line options:
  *   -l : Perform a large (1GB) test
  *   -nsrl <directory>
  *        Perform tests with vectors provided in:

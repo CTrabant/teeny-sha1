@@ -20,7 +20,7 @@ calculations you may wish to look elsewhere.
 
 The expectation is that you'll copy the function into an existing
 project source code file or add the teeny-sha1.c file to your project
-and then add a declaration for the fuction whereever it's needed.
+and then add a declaration for the function wherever it's needed.
 
 #### The sha1digest() documentation
 ```
@@ -55,7 +55,7 @@ MIT licensed and so is this in kind.
 
 I was looking for a small implementation of SHA-1 while trying to
 avoid dependencies like OpenSSL.  In my case I was writing a WebSocket
-implmenetation in a project not already dependent on OpenSSL or other
+implementation in a project not already dependent on OpenSSL or other
 library providing SHA-1 and needed to hash 30-50 bytes of data.  There
 are many "tiny" implementations around, but I found them not-so-tiny
 and nearly always requiring multiple functions.  This function

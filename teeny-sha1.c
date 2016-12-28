@@ -12,7 +12,7 @@
  *
  * To use the sha1digest() function either copy it into an existing
  * project source code file or include this file in a project and put
- * the delcaration (example below) in the sources files where needed.
+ * the declaration (example below) in the sources files where needed.
  ******************************************************************************/
 
 #include <stdio.h>
