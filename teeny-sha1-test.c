@@ -28,29 +28,66 @@
 #include <errno.h>
 
 /* Declare sha1digest and use directly from teeny-sha1.c */
-extern int sha1digest(char *digest, const uint8_t *data, size_t databytes);
+extern int sha1digest(uint8_t *digest, char *hexdigest, const uint8_t *data, size_t databytes);
+
+/* Generate hexadecimal version of a 20-byte digest value */
+void
+generatehex (char *hexdigest, uint8_t *digest)
+{
+  int idx;
+
+  for (idx = 0; idx < 20; idx++)
+  {
+    sprintf (hexdigest + (idx * 2), "%02x", digest[idx]);
+  }
+  hexdigest[40] = '\0';
+}
 
 /* Run hash function and print comparison results.
- * Return 1 on mismatch with known digest and 0 on match. */
+ * Return positive mismatch count with known digest, 0 when all match. */
 int
 testhash (char *data, size_t databytes, char *knowndigest)
 {
-  char digest[41];
-  char *statusstr;
-  int mismatch;
+  uint8_t digest[20];
+  char hexdigest[41];
+  char binhexdigest[41];
+  char *hexstatus;
+  char *binstatus;
+  int mismatch = 0;
 
-  /* Generate digest */
-  if (sha1digest (digest, (uint8_t *)data, databytes))
+  /* Generate digest, both binary and hex versions */
+  if (sha1digest (digest, hexdigest, (uint8_t *)data, databytes))
   {
-    fprintf (stderr, "Error with sha1digest\n");
+    fprintf (stderr, "Error with sha1digest()\n");
     return 1;
   }
 
-  mismatch = (strcasecmp (digest, knowndigest)) ? 1 : 0;
-  statusstr = (mismatch) ? "does NOT match" : "matches";
+  /* Generate hex version from binary digest */
+  generatehex (binhexdigest, digest);
+
+  /* Compare hex versions to know digest in hex */
+  if (strcasecmp (hexdigest, knowndigest))
+  {
+    hexstatus = "does NOT match";
+    mismatch++;
+  }
+  else
+  {
+    hexstatus = "matches";
+  }
+  if (strcasecmp (binhexdigest, knowndigest))
+  {
+    binstatus = "does NOT match";
+    mismatch++;
+  }
+  else
+  {
+    binstatus = "matches";
+  }
 
   printf ("Known digest:  '%s'  data length: %zu\n", knowndigest, databytes);
-  printf ("Teeny digest:  '%s'  %s\n", digest, statusstr);
+  printf ("  Hex digest:  '%s'  %s\n", hexdigest, hexstatus);
+  printf ("  Bin digest:  '%s'  %s\n", binhexdigest, binstatus);
   printf ("\n");
 
   return mismatch;
@@ -182,7 +219,15 @@ main (int argc, char **argv)
       /* Read file contents into buffer */
       fstat (fileno(infile), &sb);
       data = (char *) malloc ((size_t)sb.st_size);
-      fread (data, (size_t)sb.st_size, 1, infile);
+      if (fread (data, (size_t)sb.st_size, 1, infile) != 1)
+      {
+        if (ferror(infile))
+          printf ("Error reading %s: %s\n", path, strerror(errno));
+        else
+          printf ("Short read of %s, expected %zu bytes\n", path, (size_t)sb.st_size);
+
+        return 1;
+      }
       fclose (infile);
 
       printf ("File: %s\n", path);

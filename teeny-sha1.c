@@ -21,7 +21,7 @@
 #include <string.h>
 
 /* Declaration:
-extern int sha1digest(char *digest, const uint8_t *data, size_t databytes);
+extern int sha1digest(uint8_t *digest, char *hexdigest, const uint8_t *data, size_t databytes);
 */
 
 /*******************************************************************************
@@ -38,12 +38,16 @@ extern int sha1digest(char *digest, const uint8_t *data, size_t databytes);
  *    databytes -- bytes in data buffer to be hashed
  *
  * @output:
- *    digest    -- the result in hex, MUST have at least 41 bytes.
+ *    digest    -- the result, MUST be at least 20 bytes
+ *    hexdigest -- the result in hex, MUST be at least 41 bytes
+ *
+ * At least one of the output buffers must be supplied.  The other, if not 
+ * desired, may be set to NULL.
  *
  * @return: 0 on success and non-zero on error.
  ******************************************************************************/
 int
-sha1digest(char *digest, const uint8_t *data, size_t databytes)
+sha1digest(uint8_t *digest, char *hexdigest, const uint8_t *data, size_t databytes)
 {
 #define SHA1ROTATELEFT(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
 
@@ -73,7 +77,10 @@ sha1digest(char *digest, const uint8_t *data, size_t databytes)
   uint32_t tailbytes = 64 * loopcount - databytes;
   uint8_t datatail[128] = {0};
 
-  if (!digest || !data)
+  if (!digest && !hexdigest)
+    return -1;
+
+  if (!data)
     return -1;
 
   /* Pre-processing of data tail (includes padding to fill out 512-bit chunk):
@@ -171,9 +178,24 @@ sha1digest(char *digest, const uint8_t *data, size_t databytes)
     H[4] += e;
   }
 
-  /* Generate hex version of hash result */
-  snprintf (digest, 41, "%08x%08x%08x%08x%08x",
-            H[0],H[1],H[2],H[3],H[4]);
+  /* Store binary digest in supplied buffer */
+  if (digest)
+  {
+    for (idx = 0; idx < 5; idx++)
+    {
+      digest[idx * 4 + 0] = (uint8_t) (H[idx] >> 24);
+      digest[idx * 4 + 1] = (uint8_t) (H[idx] >> 16);
+      digest[idx * 4 + 2] = (uint8_t) (H[idx] >> 8);
+      digest[idx * 4 + 3] = (uint8_t) (H[idx]);
+    }
+  }
+
+  /* Store hex version of digest in supplied buffer */
+  if (hexdigest)
+  {
+    snprintf (hexdigest, 41, "%08x%08x%08x%08x%08x",
+              H[0],H[1],H[2],H[3],H[4]);
+  }
 
   return 0;
-}
+}  /* End of sha1digest() */

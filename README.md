@@ -2,18 +2,19 @@
 
 A small, single function implementation of the
 [SHA-1](https://en.wikipedia.org/wiki/SHA-1) in straightforward C
-(C99) that generates a result in hexadecimal.  This code is based on
-the SHA-1 implementation in
+(C99) that generates a digest in binary and/or hexadecimal.  This
+code is based on the SHA-1 implementation in
 [EncryptionLibrary](https://github.com/jinqiangshou/EncryptionLibrary)
 by [@jinqiangshou](https://github.com/jinqiangshou).
 
 If you need a SHA-1 calculation with no external dependencies to embed
-in your project this may be for you.  This implementation does not
-provide an incremental update interface, the entire buffer to be
-hashed must be in memory in a single buffer.  This is also
-approximately an order of magnitude slower than solutions like
-[OpenSSL](https://www.openssl.org/).  If you are doing many, many hash
-calculations on very large buffers and/or need to do chunked
+in your project this may be for you.
+
+This implementation does not provide an incremental update interface,
+the entire buffer to be hashed must be in memory in a single buffer.
+This is also approximately an order of magnitude slower than solutions
+like [OpenSSL](https://www.openssl.org/).  If you are doing many, many
+hash calculations on very large buffers and/or need to do chunked
 calculations you may wish to look elsewhere.
 
 ## Usage pattern
@@ -38,12 +39,16 @@ and then add a declaration for the function wherever it's needed.
  *    databytes -- bytes in data buffer to be hashed
  *
  * @output:
- *    digest    -- the result in hex, MUST have at least 41 bytes.
+ *    digest    -- the result, MUST be at least 20 bytes
+ *    hexdigest -- the result in hex, MUST be at least 41 bytes
+ *
+ * At least one of the output buffers must be supplied.  The other, if not 
+ * desired, may be set to NULL.
  *
  * @return: 0 on success and non-zero on error.
  ******************************************************************************/
 int
-sha1digest(char *digest, const uint8_t *data, size_t databytes)
+sha1digest(uint8_t *digest, char *hexdigest, const uint8_t *data, size_t databytes)
 ```
 
 ## MIT License
