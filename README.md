@@ -61,8 +61,8 @@ MIT licensed and so is this in kind.
 I was looking for a small implementation of SHA-1 while trying to
 avoid dependencies like OpenSSL.  In my case I was writing a WebSocket
 implementation in a project not already dependent on OpenSSL or other
-library providing SHA-1 and needed to hash 30-50 bytes of data.  There
+libraries providing SHA-1 and needed to hash 30-50 bytes of data.  There
 are many "tiny" implementations around, but I found them not-so-tiny
 and nearly always requiring multiple functions.  This function
 provides a SHA-1 in ~150 lines of commented C99 in a single function,
-no fuss.
+no fuss.  Not exactly teeny but compact, encapsulated and easy to use.
