@@ -153,7 +153,7 @@ main (int argc, char **argv)
     char *base = "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmno";
     size_t baselen = strlen(base);
     data = (char *) malloc (16777216 * baselen);
-    for (int idx = 0; idx < 16777216; idx++)
+    for (idx = 0; idx < 16777216; idx++)
     {
       memcpy (data + (idx * baselen), base, baselen);
     }
@@ -219,7 +219,7 @@ main (int argc, char **argv)
       /* Read file contents into buffer */
       fstat (fileno(infile), &sb);
       data = (char *) malloc ((size_t)sb.st_size);
-      if (fread (data, (size_t)sb.st_size, 1, infile) != 1)
+      if (sb.st_size > 0 && fread (data, (size_t)sb.st_size, 1, infile) != 1)
       {
         if (ferror(infile))
           printf ("Error reading %s: %s\n", path, strerror(errno));
